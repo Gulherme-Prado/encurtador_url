@@ -14,8 +14,9 @@ import { UrlsService } from './urls.service';
 import { ShortenUrlDto } from './dto/shorten-url.dto';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth/jwt-auth.guard';
 import { UpdateUrlDto } from './dto/update-url.dto';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AuthRequest } from 'src/common/interfaces/auth-request.interface';
+import { OptionalUser } from 'src/common/decorators/optional-user.decorator';
 
 @Controller()
 export class UrlsController {
@@ -24,23 +25,14 @@ export class UrlsController {
   @Post('urls/shorten')
   async shortenUrl(
     @Body() dto: ShortenUrlDto,
-    @Req() req: AuthRequest,
+    @OptionalUser() user: any,
   ): Promise<{ shortUrl: string }> {
-    const userId: string | undefined = (req.user as any)?.id;
+    const userId: string | undefined = user?.sub;
     const shortUrl = await this.urlsService.createShortUrl(
       dto.originalUrl,
       userId,
     );
     return { shortUrl };
-  }
-
-  @Get(':shortCode')
-  async redirect(
-    @Param('shortCode') shortCode: string,
-    @Res() res: Response,
-  ): Promise<void> {
-    const originalUrl = await this.urlsService.handleRedirect(shortCode);
-    res.redirect(originalUrl);
   }
 
   @Get('urls')
@@ -70,5 +62,14 @@ export class UrlsController {
     @Req() req: AuthRequest,
   ): Promise<{ message: string }> {
     return this.urlsService.deleteUserUrl(id, (req.user as any).id);
+  }
+
+  @Get(':shortCode')
+  async redirect(
+    @Param('shortCode') shortCode: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    const originalUrl = await this.urlsService.handleRedirect(shortCode);
+    res.redirect(originalUrl);
   }
 }

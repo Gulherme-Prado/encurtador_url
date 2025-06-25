@@ -51,6 +51,7 @@ export class UrlsService {
   ): Promise<{ message: string }> {
     const url = await this.urlRepository.findOne({
       where: { id, user: { id: userId }, deletedAt: IsNull() },
+      relations: ['user'],
     });
 
     if (!url)
@@ -70,6 +71,7 @@ export class UrlsService {
   ): Promise<{ message: string }> {
     const url = await this.urlRepository.findOne({
       where: { id, user: { id: userId }, deletedAt: IsNull() },
+      relations: ['user'],
     });
 
     if (!url)
