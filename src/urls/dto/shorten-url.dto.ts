@@ -1,7 +1,9 @@
-import { IsNotEmpty, IsUrl } from "class-validator";
+import { IsNotEmpty, IsUrl } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class ShortenUrlDto {
-    @IsNotEmpty()
-    @IsUrl()
-    originalUrl: string;
+  @ApiProperty({ example: 'https://www.google.com' })
+  @IsNotEmpty()
+  @IsUrl()
+  originalUrl: string;
 }

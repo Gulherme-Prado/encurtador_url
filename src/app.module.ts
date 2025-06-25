@@ -26,7 +26,7 @@ import { UrlsModule } from './urls/urls.module';
     UsersModule,
     UrlsModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}

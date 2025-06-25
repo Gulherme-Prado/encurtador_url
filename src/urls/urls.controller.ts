@@ -17,12 +17,15 @@ import { UpdateUrlDto } from './dto/update-url.dto';
 import { Response } from 'express';
 import { AuthRequest } from 'src/common/interfaces/auth-request.interface';
 import { OptionalUser } from 'src/common/decorators/optional-user.decorator';
+import { ApiTags, ApiBearerAuth, ApiBody, ApiParam } from '@nestjs/swagger';
 
+@ApiTags('URLs')
 @Controller()
 export class UrlsController {
   constructor(private readonly urlsService: UrlsService) {}
 
   @Post('urls/shorten')
+  @ApiBody({ type: ShortenUrlDto })
   async shortenUrl(
     @Body() dto: ShortenUrlDto,
     @OptionalUser() user: any,
@@ -36,12 +39,16 @@ export class UrlsController {
   }
 
   @Get('urls')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async listUserUrls(@Req() req: AuthRequest) {
     return this.urlsService.listUserUrls(req.user.id);
   }
 
   @Put('urls/:id')
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', required: true })
+  @ApiBody({ type: UpdateUrlDto })
   @UseGuards(JwtAuthGuard)
   async updateUrl(
     @Param('id') id: string,
@@ -56,6 +63,8 @@ export class UrlsController {
   }
 
   @Delete('urls/:id')
+  @ApiBearerAuth()
+  @ApiParam({ name: 'id', required: true })
   @UseGuards(JwtAuthGuard)
   async deleteUrl(
     @Param('id') id: string,
